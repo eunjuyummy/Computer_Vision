@@ -19,13 +19,13 @@ def yolo_detect(img,yolo_model,out_layers):
     yolo_model.setInput(test_img)
     output3=yolo_model.forward(out_layers)
     
-    box,conf,id=[],[],[]		# 박스, 신뢰도, 부류 번호
+    box,conf,id=[],[],[]		
     for output in output3:
         for vec85 in output:
             scores=vec85[5:]
             class_id=np.argmax(scores)
             confidence=scores[class_id]
-            if confidence>0.5:	# 신뢰도가 50% 이상인 경우만 취함
+            if confidence>0.5:	
                 centerx,centery=int(vec85[0]*width),int(vec85[1]*height)
                 w,h=int(vec85[2]*width),int(vec85[3]*height)
                 x,y=int(centerx-w/2),int(centery-h/2)
@@ -37,15 +37,15 @@ def yolo_detect(img,yolo_model,out_layers):
     objects=[box[i]+[conf[i]]+[id[i]] for i in range(len(box)) if i in ind]
     return objects
 
-model,out_layers,class_names=construct_yolo_v3()		# YOLO 모델 생성
-colors=np.random.uniform(0,255,size=(len(class_names),3))	# 부류마다 색깔
+model,out_layers,class_names=construct_yolo_v3()		
+colors=np.random.uniform(0,255,size=(len(class_names),3))	
 
 img=cv.imread('soccer.jpg')
 if img is None: sys.exit('파일이 없습니다.')
 
-res=yolo_detect(img,model,out_layers)	# YOLO 모델로 물체 검출
+res=yolo_detect(img,model,out_layers)	
 
-for i in range(len(res)):			# 검출된 물체를 영상에 표시
+for i in range(len(res)):			
     x1,y1,x2,y2,confidence,id=res[i]
     text=str(class_names[id])+'%.3f'%confidence
     cv.rectangle(img,(x1,y1),(x2,y2),colors[id],2)
